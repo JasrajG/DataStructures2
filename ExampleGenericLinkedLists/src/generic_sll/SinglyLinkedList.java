@@ -1,4 +1,5 @@
 package generic_sll;
+import java.util.NoSuchElementException;
 
 public class SinglyLinkedList<E> {
 	
@@ -64,6 +65,19 @@ public class SinglyLinkedList<E> {
 	 * 	 + void removeFirst()
 	 * 	 + void addLast(E e)
 	 */
+	//-----------------------Method Created by me------------------
+	void addLast(E e) {
+		if (tail==null) {
+			head = new Node<E>(e,null);
+			tail =head;
+			size++;
+		}
+		else {
+			tail.setNext(new Node<E>(e, null));
+			tail=tail.getNext();
+			size++;
+		}
+	}
 
 	public Node<E> getNodeAt (int i) {
 		int size = this.getSize(); // a more efficient implementation is to make `size` an attribute.
@@ -101,8 +115,8 @@ public class SinglyLinkedList<E> {
 		} 
 	}
 
-	public void removeFirst () {
-		if (size == 0) { /* error */ }
+	/*public void removeFirst () {
+		if (size == 0) { //error  }
 		else if (size == 1) {
 			head = null; 
 			tail = null;
@@ -113,6 +127,24 @@ public class SinglyLinkedList<E> {
 			head = oldHead.getNext();
 			oldHead.setNext(null); 
 			size --; 
+		}
+	}*/
+	
+	//my method---------
+	
+	public void removeFirst() {
+		if (head== null) {
+			throw new NoSuchElementException("Cannot remove from an empty list");
+		}
+		else {
+			size--;
+			Node<E> oldhead =head;
+			oldhead.setNext(null);
+			head=head.getNext();
+			if (head==null) {
+				tail=null;
+			}
+			
 		}
 	}
 
@@ -137,4 +169,68 @@ public class SinglyLinkedList<E> {
 	 * 	+ void insertBefore(Node n, E e)
 	 * 	+ void removeAt(int i)
 	 */
+	
+	//----------this method is my own!!!
+	
+	void insertAfter(Node<E> n, E e) {
+		size++;
+		n.setNext(new Node<E>(e,n.getNext()));
+		if (n==tail) {  
+			tail=n.getNext();
+		}
+		
+	}
+	
+	//-------------my own method
+	void insertBefore(Node<E> n, E e) {
+		if (n==head) {
+			addFirst(e);
+			
+		}
+		
+
+		else {	
+			Node<E> current = head;
+			while(current != null && current.getNext()!=n) {
+				current=current.getNext();
+			}
+			if (current==null) {
+				throw new IllegalArgumentException("the node entered is not in the list!");
+			}
+			else {
+				
+				current.setNext(new Node<E>(e, current.getNext()));
+				size++;
+			}
+			
+		}
+		
+		
+		
+	}
+	//---------my own method again!!!
+	//0-based indexing
+		void removeAt(int i) {
+				if (i >= size) {
+					throw new IllegalArgumentException("the node entered is not in the list!");
+				}
+			
+				else if (i==0) {
+					removeFirst();
+				}
+				else if(i==(size-1)) {
+					removeLast();
+				}
+				
+				else {
+					Node<E> prev = getNodeAt(i-1);
+					Node<E> current = prev.getNext();
+					prev.setNext(current.getNext());
+					current.setNext(null);
+					size--;
+				}
+		}
+	
+	
+	
 }

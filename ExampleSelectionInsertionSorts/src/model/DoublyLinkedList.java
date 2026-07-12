@@ -50,7 +50,7 @@ public class DoublyLinkedList<E> {
 		}
 	}
 
-	private void addBetween(E e, Node<E> pred, Node<E> succ) {
+	public void addBetween(E e, Node<E> pred, Node<E> succ) {
 		Node<E> newNode = new Node<>(e, pred, succ);
 		pred.setNext(newNode);
 		succ.setPrev(newNode);
@@ -76,7 +76,7 @@ public class DoublyLinkedList<E> {
 		} 
 	}
 
-	private void remove(Node<E> node) {
+	public void remove(Node<E> node) {
 		Node<E> pred = node.getPrev();
 		Node<E> succ = node.getNext();
 		pred.setNext(succ);
