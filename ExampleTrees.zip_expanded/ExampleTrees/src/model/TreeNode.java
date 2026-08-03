@@ -61,7 +61,7 @@ public class TreeNode<E> {
 		 * Assumption: i is a valid index for array `this.children`.
 		 */
 		if(i==noc-1) {
-			children[1]=null;
+			children[i]=null;
 		}
 		else {
 			for (int j = i;j < noc;j++) {

@@ -1,92 +1,77 @@
 package model;
 
-import tests.*;
+import tests.Expression;
+import tests.Operand;
+import tests.Operator;
+import tests.SLLNode;
+import tests.TreeNode;
 
 public class TreeUtilities {
 
-	public TreeNode<Expression> getInfixTree(SLLNode<Expression> input){
+	public TreeNode<Expression> getInfixTree(SLLNode<Expression> expression) {
 		
-		//head is the top of our stack
-		SLLNode<TreeNode<Expression>> head = null;
-		SLLNode<Expression> current = input;
-		
-		while (current != null) {
+		SLLNode<TreeNode<Expression>> stack = null;
+		while (expression != null) {
 			
-			TreeNode<Expression> currentDup = new TreeNode<Expression>(current.getElement());
+			//create TreeNode
+			TreeNode<Expression> current = new TreeNode<Expression>(expression.getElement());
+			
 			//push
-			if (current.getElement() instanceof Operand) {
-				head = new SLLNode<TreeNode<Expression>>(currentDup,head);
+			if(expression.getElement() instanceof Operand) {
+				stack = new SLLNode<TreeNode<Expression>>(current, stack);
 			}
 			
-			
-			//pop
 			else {
+			
+			current.addChild(stack.getNext().getElement());
+			current.addChild(stack.getElement());
+			
+			stack.getNext().getElement().setParent(current);
+			stack.getElement().setParent(current);
+			
+			//pop 2, push 1
+			
+			stack = new SLLNode<TreeNode<Expression>>(current, stack.getNext().getNext());
 				
-				
-				currentDup.addChild(head.getNext().getElement());
-				head.getNext().getElement().setParent(currentDup);
-				
-				
-				
-				currentDup.addChild(head.getElement());
-				head.getElement().setParent(currentDup);
-				head=head.getNext().getNext();
-				
-				
-				head = new SLLNode<TreeNode<Expression>>(currentDup,head);
 			}
 			
 			
-			current=current.getNext();
+			
+			
+			expression = expression.getNext();
 		}
 		
-		
-		return head.getElement();
-		
+		return stack.getElement();
 	}
-	
-	
-	
-	
-	
-	
-	public String getInfixSequence(SLLNode<Expression> input){
-		
-	//head is the top of our stack
-			SLLNode<String> head = null;
-			SLLNode<Expression> current = input;
+
+	public Object getInfixSequence(SLLNode<Expression> expression) {
+		SLLNode<String> stack = null;
+		while (expression != null) {
 			
-			while (current != null) {
+			//create TreeNode
+			
+			//push
+			if(expression.getElement() instanceof Operand) {
+				stack = new SLLNode<String>(String.format("%d", ((Operand)expression.getElement()).getValue()), stack);
+			}
+			
+			else {
+				String h = '(' + stack.getNext().getElement() + String.format(" %c ", ((Operator)expression.getElement()).getOperator()) + stack.getElement() + ')';
+		
+			
+			//pop 2, push 1
+			
+			stack = new SLLNode<String>(h, stack.getNext().getNext());
 				
-				//push
-				if (current.getElement() instanceof Operand) {
-					head = new SLLNode<String>(String.format("%d", ((Operand)current.getElement()).getValue()),head);
-				}
-				
-				
-				//pop
-				else {
-					
-					
-					String s = '(' + head.getNext().getElement() + ' ' + ((Operator)current.getElement()).getOperator() + ' ' + head.getElement() + ')';
-					
-					
-					
-					head=head.getNext().getNext();
-					
-					
-					head = new SLLNode<String>(s,head);
-				}
-				
-				
-				current=current.getNext();
 			}
 			
 			
-			return head.getElement();
-				
+			
+			
+			expression = expression.getNext();
+		}
 		
-
+		return stack.getElement();
 	}
-	
+
 }

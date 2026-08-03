@@ -9,126 +9,124 @@ public class TreeUtilities {
 		
 		
 		
-		//initialize SLL
+		
+		//start by creating header node which lets us not need special cases
 		SLLNode<Integer> header = new SLLNode<Integer>(null,null);
 		
-		getElementsOfRanksH(n, header);
 		
-		//get rid of extra nodes at the end
+		
+		
+		helper(n, header);
+		
+		//now we have an organized list, we need to modify it so that it has the specified indicees
+		
+		//start with j
 		SLLNode<Integer> current = header;
-		for (int h = 0; h <j;h++ ) {
-		current=current.getNext();
+		for (int c = 0; c < j; c++) {
+			current = current.getNext();
 		}
+		
 		current.setNext(null);
 		
-		//go to the specified beginning
+		//now i
 		current = header;
-		for (int h = 0; h<i;h++ ) {
-			current=current.getNext();
-			}
-		
+		for (int c = 0; c < i; c++) {
+			current = current.getNext();
+		}
 		
 		return current;
 	}
 	
-	private SLLNode<Integer> getElementsOfRanksH(TreeNode<Integer> n, SLLNode<Integer> header){
+	private void helper(TreeNode<Integer> n, SLLNode<Integer> header){
 		
-		//add parent node first
-		add(n,header);
-		//go through children and recrusively call this method
-		SLLNode<TreeNode<Integer>> child = n.getChildren();
-		while (child != null) {
-			//next line needs to be change
-			getElementsOfRanksH(child.getElement(), header);
-			child=child.getNext();
+		//add n first
+		int n_int = n.getElement();
+		
+		SLLNode<Integer> current = header;
+		while(current.getNext() != null && current.getNext().getElement() < n_int) {
+			current = current.getNext();
+		}
+		current.setNext(new SLLNode<Integer>(n_int, current.getNext()) );
+		
+		//call it on the children now
+		
+		SLLNode<TreeNode<Integer>> children  = n.getChildren();
+		
+		while (children !=null) {
+			helper(children.getElement(), header);
+			children = children.getNext();
 		}
 		
 		
-		return null;
 	}
-	
-	private void add(TreeNode<Integer> n, SLLNode<Integer> header) {
-		
-	
-		
-	
-			
-		//loop through until you either hit a larger int, or the end of the list
-		int num = n.getElement();
-		SLLNode<Integer> current=header;
-		while(current.getNext() != null && current.getNext().getElement()<num) {
-			current=current.getNext();
-		}
-		current.setNext(new SLLNode<Integer>(num,current.getNext()));
 
+	public TreeNode<String> getStats(TreeNode<Integer> n) {
+		//start with just recreating the structure
+		TreeNode<String> n_copy = helper1(n);
+		
+		//now we add number of descendatns
+		helper2(n, n_copy);
+		
+		//finally the sum of descenedants
+		helper3(n, n_copy);
+		
+		return n_copy;
 	}
 	
-	
-	
-	
-	
-	
-	public TreeNode<String> getStats(TreeNode<Integer> n){
-		
-		//helper 1 recreates the tree structure in String form
-		TreeNode<String> root = helper1(n);
-		
-		//helper 2
-		helper2(n,root);
-		
-		//helper 3
-		helper3(n,root);
-		
-		return root;
-	}
-	
-	//create tree structure first
 	private TreeNode<String> helper1(TreeNode<Integer> n) {
-		TreeNode<String> root = new TreeNode<String>("");
-		SLLNode<TreeNode<Integer>> child = n.getChildren();
-		while (child != null) {
-			TreeNode<String> newChild = helper1(child.getElement());
-			root.addChild(newChild);
-			newChild.setParent(root);
+		TreeNode<String> n_copy = new TreeNode<String>("");
+		SLLNode<TreeNode<Integer>> children = n.getChildren();
+		while (children!= null) {
+			TreeNode<String> child_copy = helper1(children.getElement());
+			n_copy.addChild(child_copy);
+			child_copy.setParent(n_copy);
+			children = children.getNext();
+		}
+		return n_copy;
+	}
+	
+	private int helper2(TreeNode<Integer> n, TreeNode<String> n_copy) {
+		
+		
+		int i = 1;
+		SLLNode<TreeNode<Integer>> children = n.getChildren();
+		SLLNode<TreeNode<String>> children2 = n_copy.getChildren();
+		while (children!= null) {
+			i += helper2(children.getElement(), children2.getElement());
 			
-			
-			
-			child=child.getNext();
+			children = children.getNext();
+			children2 = children2.getNext();
 		}
 		
-		return root;
+		//write i into the node itself
+		
+		n_copy.setElement(String.format("Number of descendants: %d;", i));
+		return i;
 	}
 	
-	//number of descendants
-	private int helper2(TreeNode<Integer> n, TreeNode<String> n2){
-		SLLNode<TreeNode<Integer>> child = n.getChildren();
-		SLLNode<TreeNode<String>> child2 = n2.getChildren();
-		int j = 1;
-		while (child != null) {
-			j+= helper2(child.getElement(), child2.getElement());
+	
+	private int helper3(TreeNode<Integer> n, TreeNode<String> n_copy) {
+		
+		
+		int i = n.getElement();
+		SLLNode<TreeNode<Integer>> children = n.getChildren();
+		SLLNode<TreeNode<String>> children2 = n_copy.getChildren();
+		while (children!= null) {
+			i += helper3(children.getElement(), children2.getElement());
 			
-			
-			child=child.getNext();
-			child2=child2.getNext();
+			children = children.getNext();
+			children2 = children2.getNext();
 		}
-		n2.setElement(String.format("Number of descendants: %d;",j));
-		return j;
+		
+		//write i into the node itself
+		
+		n_copy.setElement(n_copy.getElement() +String.format(" Sum of descendants: %d", i));
+		return i;
 	}
 	
-	private int helper3(TreeNode<Integer> n, TreeNode<String> n2){
-		SLLNode<TreeNode<Integer>> child = n.getChildren();
-		SLLNode<TreeNode<String>> child2 = n2.getChildren();
-		int j = n.getElement();
-		while (child != null) {
-			j+= helper3(child.getElement(), child2.getElement());
-			
-			
-			child=child.getNext();
-			child2=child2.getNext();
-		}
-		n2.setElement(n2.getElement()+String.format(" Sum of descendants: %d",j));
-		return j;
-	}
 	
-
+	
+	
+	
+	
 }
